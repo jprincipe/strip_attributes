@@ -47,11 +47,19 @@ module StripAttributes
 
   def self.strip_record(record, options = nil)
     attributes = narrow(record.attributes, options)
+    using_hstore = options.has_key?(:hstore_values)
 
     attributes.each do |attr, value|
       original_value = value
       value = strip_string(value, options)
-      record[attr] = value if original_value != value
+
+      if original_value != value
+        if using_hstore
+          record[:data][attr] = value
+        else
+          record[attr] = value
+        end
+      end
     end
 
     record
@@ -103,6 +111,15 @@ module StripAttributes
     elsif only = options && options[:only]
       only = Array(only).collect { |attribute| attribute.to_s }
       attributes.slice(*only)
+    elsif hstore_values = options && options[:hstore_values]
+      hstore_values = Array(hstore_values).collect { |attribute| attribute.to_s }
+      if attributes["data"].nil?
+        attributes = {}
+      else
+        attributes = attributes["data"].slice(*hstore_values) unless attributes["data"].nil?
+      end
+
+      attributes
     else
       attributes
     end
