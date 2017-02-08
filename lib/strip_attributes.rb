@@ -19,7 +19,7 @@ module ActiveModel::Validations::HelperMethods
 end
 
 module StripAttributes
-  VALID_OPTIONS = [:only, :except, :allow_empty, :collapse_spaces, :replace_newlines, :regex]
+  VALID_OPTIONS = [:only, :except, :allow_empty, :collapse_spaces, :replace_newlines, :regex, :hstore_values]
 
   # Unicode invisible and whitespace characters.  The POSIX character class
   # [:space:] corresponds to the Unicode class Z ("separator"). We also
